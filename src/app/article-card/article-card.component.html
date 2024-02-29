@@ -1,0 +1,20 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="article-card">
+      <!-- article-card.component.html -->
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ publication.title }}</h5>
+          <p class="card-text">{{ publication.body | slice:0:100 }}</p>
+            <a routerLink="/article-detail/{{ publication.idPublication }}">Show More</a>
+
+        </div>
+      </div>
+
+
+      </div>
+    </div>
+  </div>
+
+
+

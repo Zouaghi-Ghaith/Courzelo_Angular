@@ -1,0 +1,91 @@
+<div class="container" style="justify-content: flex-start;">
+  <app-navbar></app-navbar>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3">
+      <app-sidebar class="fixed-sidebar"></app-sidebar>
+    </div>
+    <div class="col-md-9">
+      <!-- Article Card -->
+      <div class="article-card">
+        <div *ngIf="article">
+          <h1 style="font-size: 24px;">{{ article.title }}</h1>
+          <div class="text-left">
+            <p><strong>Description:</strong> {{ article.description }}</p>
+            <p><strong>Body:</strong> {{ article.body }}</p>
+            <p><strong>Tags:</strong> {{ article.tags }}</p>
+              <!-- Upvote -->
+            <div class="vote">
+
+
+              <!-- Upvote -->
+              <span (click)="upvote()" class="increment up">&#9650;</span>
+              <span class="count upvoted">{{ article.upvoteCount }}</span>
+
+              <!-- Downvote -->
+              <span class="count downvoted">{{ article.downvoteCount }}</span>
+              <span (click)="downvote()" class="increment down">&#9660;</span>
+            </div>
+
+            <!-- Include jQuery -->
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+              $(function(){
+                $(".increment").click(function(){
+                  var count = parseInt($(this).siblings(".count").text());
+
+                  if($(this).hasClass("up")) {
+                    count++;
+                  } else {
+                    count--;
+                  }
+
+                  $(this).siblings(".count").text(count);
+
+                  $(this).parent().addClass("bump");
+
+                  setTimeout(() => {
+                    $(this).parent().removeClass("bump");
+                  }, 400);
+                });
+              });
+            </script>
+
+          </div>
+          <div *ngIf="isEditing" class="text-left">
+            <input type="text" [(ngModel)]="updatedArticle.title" placeholder="Title">
+            <input type="text" [(ngModel)]="updatedArticle.description" placeholder="Description">
+            <input type="text" [(ngModel)]="updatedArticle.body" placeholder="Body">
+            <input type="text" [(ngModel)]="updatedArticle.tags" placeholder="Tags">
+            <button (click)="saveChanges()">Save</button>
+          </div>
+          <div *ngIf="!isEditing" class="options text-left">
+            <button (click)="toggleEditing()">Edit</button>
+            <button (click)="handleDelete()">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Comment Form -->
+      <div class="add-comment-form">
+        <div class="comment-form">
+          <textarea [(ngModel)]="newComment" placeholder="Write your comment" style="width: 100%; height: 100px;"></textarea>
+          <button (click)="addComment()">Add Comment</button>
+        </div>
+      </div>
+
+      <div class="comments-section">
+        <h3>Comments</h3>
+        <div class="comment-card" *ngFor="let comment of comments">
+          <div class="author-info">Authored by: Anonymous</div>
+          <div class="comment-content">{{ comment.content }}</div>
+          <hr> <!-- Horizontal line to separate comments -->
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
