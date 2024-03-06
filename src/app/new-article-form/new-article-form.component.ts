@@ -6,6 +6,7 @@
 
 
 
+
   @Component({
     selector: 'app-new-article-form',
     templateUrl: './new-article-form.component.html'
@@ -14,54 +15,61 @@
     @Input() publication: any;
     submitted = false;
     publicationForm: FormGroup;
-
+    selectedFile: File | undefined; // Store the selected file
 
     constructor(
       private router: Router,
       private articleService: ArticleService,
-      private formBuilder: FormBuilder
+      private formBuilder: FormBuilder,
+       // Inject FileUploadService
     ) {
       this.createForm();
-      this.submitted   = false;
+      this.submitted = false;
     }
 
-
-
     createForm() {
-    this.publicationForm = this.formBuilder.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
-      body: ['', [Validators.required, Validators.minLength(50)]],
-      tags: ['']
-    });
-  }
+      this.publicationForm = this.formBuilder.group({
+        title: ['', [Validators.required, Validators.minLength(3)]],
+        description: ['', [Validators.required, Validators.minLength(10)]],
+        body: ['', [Validators.required, Validators.minLength(50)]],
+        tags: ['']
+      });
+    }
 
-  get f() { return this.publicationForm.controls; }
-
-
-
+    get f() { return this.publicationForm.controls; }
 
     submitForm(): void {
       this.submitted = true;
       this.publication = this.publicationForm.value;
-      console.log('Publication data:', this.publication); // Log the form data before submission
-      console.log('Publication form validity:', this.publicationForm.valid); // Log the form validity
-      console.log('Publication form errors:', this.publicationForm.errors); // Log any form errors
 
-      // Proceed with form submission
-      this.articleService.addPublication(this.publication).subscribe(
-        () => {
-          console.log('Article added successfully.');
-          this.router.navigate(['/article-card']);
-        },
-        (error) => {
-          console.error('Error adding publication:', error);
+      // Create FormData object to append form data including the selected file
+      const formData = new FormData();
+      formData.append('file', this.selectedFile); // Append the selected file
+      formData.append('title', this.publicationForm.value.title);
+      formData.append('description', this.publicationForm.value.description);
+      formData.append('body', this.publicationForm.value.body);
+      formData.append('tags', this.publicationForm.value.tags);
 
+
+          this.articleService.addPublication(this.publication).subscribe(
+            () => {
+              console.log('Article added successfully.');
+              this.router.navigate(['/article-card']);
+            },
+            (error) => {
+              console.error('Error adding publication:', error);
+            }
+          );
         }
-      );
+
+
+
+    // Method to handle file selection
+    onFileSelected(event: any): void {
+      this.selectedFile = event.target.files[0];
     }
 
-
+    // Getter methods for form controls
     get title() {
       return this.publicationForm.get('title');
     }
@@ -77,8 +85,4 @@
     get tags() {
       return this.publicationForm.get('tags');
     }
-
-
-
-
   }

@@ -13,6 +13,12 @@ export class ArticleDetailComponent implements OnInit {
   article: Publication;
   comments: Comment[];
   newComment: string;
+  netScore: number;
+  upvoted: boolean;
+  downvoted: boolean;
+  isUpvoted: boolean = false;
+  isDownvoted: boolean = false;
+  commentCount: number;
 
   isEditing: boolean = false;
   updatedArticle: Publication;
@@ -20,7 +26,8 @@ export class ArticleDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private articleService: ArticleService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.fetchArticle();
@@ -32,6 +39,8 @@ export class ArticleDetailComponent implements OnInit {
     this.articleService.getArticleById(idPublication).subscribe(
       (article: Publication) => {
         this.article = article;
+        this.netScore = article.upvoteCount - article.downvoteCount;
+
 
         this.getComments();
       },
@@ -40,7 +49,6 @@ export class ArticleDetailComponent implements OnInit {
       }
     );
   }
-
 
 
   handleDelete(): void {
@@ -80,6 +88,7 @@ export class ArticleDetailComponent implements OnInit {
     this.articleService.getCommentsByArticleId(this.article.idPublication)
       .subscribe(comments => this.comments = comments);
   }
+
   addComment(): void {
     if (!this.newComment) {
       console.error('Comment cannot be empty');
@@ -96,20 +105,66 @@ export class ArticleDetailComponent implements OnInit {
         }
       );
   }
+
   upvote(): void {
     this.articleService.upvoteArticle(this.article.idPublication).subscribe(() => {
 
-      console.log('upvoted'); // Update article data after upvote
+      console.log('upvoted');
     });
   }
 
   downvote(): void {
     this.articleService.downvoteArticle(this.article.idPublication).subscribe(() => {
 
-      console.log('downvoted'); // Update article data after downvote
+      console.log('downvoted');
     });
   }
 
+  undoVote(isUpvote: boolean): void {
+    const idPublication = this.article.idPublication;
+    this.articleService.undoVote(idPublication, isUpvote).subscribe(
+      () => {
+        console.log('Vote undone successfully.');
+        if (isUpvote) {
+          this.upvoted = false;
+        } else {
+          this.downvoted = false;
+        }
+        // Optionally, update UI or take other actions
+      },
+      (error) => {
+        console.error('Error undoing vote:', error);
+      }
+    );
+  }
+
+
+
+  toggleVote(upvote: boolean): void {
+    if (upvote) {
+      if (!this.isUpvoted) {
+        // If not upvoted, upvote the article
+        this.upvote();
+        this.isUpvoted = true;
+        this.isDownvoted = false; // Reset downvote state
+      } else {
+        // If already upvoted, undo the upvote
+        this.undoVote(true); // Pass true for upvote
+        this.isUpvoted = false;
+      }
+    } else {
+      if (!this.isDownvoted) {
+        // If not downvoted, downvote the article
+        this.downvote();
+        this.isDownvoted = true;
+        this.isUpvoted = false; // Reset upvote state
+      } else {
+        // If already downvoted, undo the downvote
+        this.undoVote(false); // Pass false for downvote
+        this.isDownvoted = false;
+      }
+    }
+  }
 
 
 }

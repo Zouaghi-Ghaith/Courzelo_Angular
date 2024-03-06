@@ -16,42 +16,32 @@
             <p><strong>Description:</strong> {{ article.description }}</p>
             <p><strong>Body:</strong> {{ article.body }}</p>
             <p><strong>Tags:</strong> {{ article.tags }}</p>
+
+
+            <!-- Vote buttons -->
+            <div class="vote" [class.on]="isUpvoted" (click)="toggleVote(true)">
               <!-- Upvote -->
-            <div class="vote">
-
-
-              <!-- Upvote -->
-              <span (click)="upvote()" class="increment up">&#9650;</span>
-              <span class="count upvoted">{{ article.upvoteCount }}</span>
-
-              <!-- Downvote -->
-              <span class="count downvoted">{{ article.downvoteCount }}</span>
-              <span (click)="downvote()" class="increment down">&#9660;</span>
+              <svg width="36" height="36">
+                <path *ngIf="!isUpvoted" d="M2 26h32L18 10 2 26z" fill="currentColor"></path>
+                <path *ngIf="isUpvoted" d="M2 26h32L18 10 2 26z" fill="currentColor"></path>
+              </svg>
             </div>
 
-            <!-- Include jQuery -->
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script>
-              $(function(){
-                $(".increment").click(function(){
-                  var count = parseInt($(this).siblings(".count").text());
+            <!-- Net count -->
+            <div class="net-count">{{ article.netScore }}</div>
 
-                  if($(this).hasClass("up")) {
-                    count++;
-                  } else {
-                    count--;
-                  }
+            <div class="vote" [class.on]="isDownvoted" (click)="toggleVote(false)">
+              <!-- Downvote -->
+              <svg width="36" height="36">
+                <!-- Adjust the initial display of downvote arrow -->
+                <path *ngIf="!isDownvoted" d="M2 10h32L18 26 2 10z" fill="currentColor"></path>
+                <path *ngIf="isDownvoted" d="M2 10h32L18 26 2 10z" fill="currentColor"></path>
+              </svg>
+            </div>
 
-                  $(this).siblings(".count").text(count);
 
-                  $(this).parent().addClass("bump");
 
-                  setTimeout(() => {
-                    $(this).parent().removeClass("bump");
-                  }, 400);
-                });
-              });
-            </script>
+
 
           </div>
           <div *ngIf="isEditing" class="text-left">

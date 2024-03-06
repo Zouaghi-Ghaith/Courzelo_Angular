@@ -3,7 +3,7 @@
     <!-- Brand -->
     <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" routerLinkActive="active" [routerLink]="['/dashboard']">{{getTitle()}}</a>
     <!-- New Article Button (conditionally rendered) -->
-    <button *ngIf="isPublicationPage()" class="btn btn-outline-primary ml-3" routerLink="/article">New Article</button>
+    <button *ngIf="isPublicationPage()" class="btn btn-outline-primary ml-3" routerLink="/new-article-form">New Article</button>
     <button *ngIf="isPublicationPage()" class="btn btn-outline-primary ml-3" routerLink="/article">Articles</button>
 
     <!-- Form -->
